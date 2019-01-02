@@ -12,6 +12,16 @@ module.exports.toSnakeCase = (str) => {
   return snakeCase.slice(0, 1) === '_' ? snakeCase.slice(1) : snakeCase;
 }
 
+module.exports.toCamelCase = (str) => {
+  const underscores = str.match(/([_ ][a-z])/g);
+  if (!underscores) {
+    return str;
+  }
+
+  let camelCase = underscores.reduce((s, char) => s.replace(new RegExp(char), char[1].toUpperCase()), str);
+  return camelCase;
+}
+
 module.exports.isDate = (val) => {
   return (!_.isString(val)) ? false : isValidDate(parseDate(val));
 }

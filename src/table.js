@@ -1,7 +1,6 @@
 const utils = require('./utils');
 const _ = require('lodash');
 
-// TODO: test if passed an array;
 function _createColumns(definitions) {
   const jsonKeys = Object.keys(definitions);
 
@@ -116,6 +115,8 @@ Table.prototype.query = function(sql, args) {
   return this._db.query(sql, args);
 }
 
+// TODO: remove the transform because for it won't work for multi table queries
+// Potentially run a snake_case to camelCase instead
 Table.prototype.queryForOne = function(sql, args) {
   return this.query(sql, args).then((results) => {
     if (!results.rowCount || results.rowCount <= 0) {
@@ -129,6 +130,7 @@ Table.prototype.queryForOne = function(sql, args) {
   });
 }
 
+// TODO: remove the transform because for it won't work for multi table queries
 Table.prototype.queryForMany = function(sql, args) {
   return this.query(sql, args).then((results) => {
     if (!results.rowCount || results.rowCount <= 0) {
