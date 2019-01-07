@@ -11,8 +11,11 @@ module.exports.connect = (options) => {
   options = {...defaultOptions, ...options};
   const pool = new Pool(options);
 
+  // We call .connect here to ensure that we have a connection before proceeding since creating a new Pool
+  // is not a blocking call on the stack. This means that timing issues where database code is called before the
+  // connection is fully finished will happen without the following code.
   return pool.connect().then((client) => {
-    client.release(); 
+    client.release();
     database = new PostgresDatabase(pool);
     return database;
   });
