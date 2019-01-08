@@ -1,0 +1,21 @@
+version: '3'
+
+services:
+  postgres:
+    image: wridder/light-model/postgres:latest
+    restart: "no"
+    build: ./docker/postgres
+    volumes:
+      -  ltc-data:/var/lib/postgresql/ltcdata
+    environment:
+      - POSTGRES_DB=stag
+      # super user credentials
+      - POSTGRES_USER=superuser
+      # user credentials
+      - DB_USER=testuser
+      - DB_PASSWORD=testingThings
+    ports:
+      - 5432:5432
+
+volumes:
+  ltc-data:
