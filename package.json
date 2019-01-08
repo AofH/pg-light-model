@@ -4,6 +4,10 @@
   "description": "A lightweight module to model postgres tables",
   "main": "index.js",
   "scripts": {
+    "database": "docker-compose up postgres",
+    "database-detached": "docker-compose up -d postgres",
+    "database-down": "docker-compose down",
+    "database-down-clean": "docker-compose down -v",
     "test": "mocha test --reporter dot"
   },
   "author": "William Ridder",
