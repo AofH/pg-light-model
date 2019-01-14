@@ -8,7 +8,8 @@
     "database-detached": "docker-compose up -d postgres",
     "database-down": "docker-compose down",
     "database-down-clean": "docker-compose down -v",
-    "test": "mocha test --reporter dot"
+    "test": "mocha test --reporter dot --invert",
+    "test-integration": "mocha test --reporter dot"
   },
   "author": "William Ridder",
   "license": "ISC",

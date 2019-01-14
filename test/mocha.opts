@@ -2,4 +2,5 @@
 --recursive
 --delay
 --require ./test/test.initialize.js
+--grep Integration
 --exit
