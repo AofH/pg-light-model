@@ -46,6 +46,10 @@ module.exports.connect = (options) => {
   });
 };
 
+module.exports.disconnect = () => {
+  return this._db.end();
+};
+
 module.exports.createModel = (name, definition) => {
   if (models[name]) { 
     throw new Error(`Model ${name} has already been defined`);
