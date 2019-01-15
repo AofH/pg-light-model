@@ -45,10 +45,14 @@ PostgresDatabase.prototype.performTransaction = function(actions) {
 
   return this.db.connect().then((client) => {
     return this._performActions(actions, client).then((results) => {
-      return client.release().then(() => results);
+      client.release();
+      return results;
     }).catch((err) => {
       console.error(`Error performing a  transaction: ${err.message}`);
-      return client.query('Rollback').then(() => client.release()).then(() => false);
+      return client.query('Rollback').then(() => {
+        client.release();
+        return false;
+      });
     });
   });
 };

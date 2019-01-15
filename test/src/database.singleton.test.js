@@ -1,10 +1,10 @@
-const database = require('../../src/database');
+const database = require('../../src/database.singleton');
 
 const Table = require('../../src/table');
 const TestFixture = require('../../src/test.fixtures');
 const databaseServer = require('../../src/postgres.db');
 
-describe('Database', () => {
+describe('Database Singleton', () => {
   describe('.query', () => {
     describe('when database has not connected', () => {
       let prevDb;
@@ -129,11 +129,11 @@ describe('Database', () => {
       before(() => sinon.stub(databaseServer, 'connect').rejects(new Error('Test Error')));
       after(() => databaseServer.connect.restore());
 
-      it('should return false', () => {
-        let options = {host: 'adfkaldfja'}
-        return database.connect(options).then((result) => {
-          return expect(result).to.equal(false);
-        });
+      it('should throw the expected error to the calling code', () => {
+        let options = {host: 'localhost'};
+        let func = () => database.connect(options);
+
+        return expect(func()).to.be.rejectedWith(Error);
       });
     });
 
@@ -154,8 +154,8 @@ describe('Database', () => {
         delete database._models[name];
       });
 
-      it('should return true', () => {
-        return expect(result).to.equal(true);
+      it('should return a database object back', () => {
+        return expect(result).to.deep.equal(mockDb);
       });
 
       it('should have called .connect with the expected args', () => {
@@ -195,8 +195,8 @@ describe('Database', () => {
         delete database._models[name];
       });
 
-      it('should return true', () => {
-        return expect(result).to.equal(true);
+      it('should return a database object back', () => {
+        return expect(result).to.deep.equal(mockDb);
       });
 
       it('should have called .connect with the expected args', () => {

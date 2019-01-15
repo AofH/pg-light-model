@@ -3,6 +3,7 @@ let TestFixture = require('./test.fixtures');
 let databaseServer = require('./postgres.db');
 
 let models = {};
+let activeOptions = {};
 
 const defaultOptions = {
   useFixtures: false,
@@ -25,23 +26,28 @@ module.exports.performTransaction = (actions) => {
   return this._db.performTransaction(actions);
 };
 
+const loadDatabaseIntoTable = function(table, db, useFixtures) {
+  table.setDatabase(db);
+
+  if (useFixtures) {
+    table.test = new TestFixture(table);
+  }
+};
+
 module.exports.connect = (options) => {
-  options = {...defaultOptions, ...options};
+  this.activeOptions = {...defaultOptions, ...options};
 
-  return databaseServer.connect(options).then((db) => {
+  return databaseServer.connect(this.activeOptions).then((db) => {
     Object.keys(models).forEach((modelKey) => {
-      models[modelKey].setDatabase(db);
-
-      if (options.useFixtures) {
-        models[modelKey].test = new TestFixture(models[modelKey]);
-      }
+      loadDatabaseIntoTable(models[modelKey], db, this.activeOptions.useFixtures);
     });
     this._db = db;
-    return true;
-  }).catch((err) => {
-    console.error('Could not connect to database: ' + err.message);
-    return false;
+    return db;
   });
+};
+
+module.exports.disconnect = () => {
+  return this._db.end();
 };
 
 module.exports.createModel = (name, definition) => {
@@ -50,6 +56,11 @@ module.exports.createModel = (name, definition) => {
   }
 
   let table = new Table(name, definition);
+
+  if (this._db) {
+    loadDatabaseIntoTable(table, this._db, this.activeOptions.useFixtures);
+  }
+
   models[name] = table;
   return models[name];
 };
