@@ -21,6 +21,26 @@ describe('Table', () => {
       });
     });
 
+    describe('when defintion is a string and has brackets containing the size', () => {
+      let definition = {title: 'character (45)'};
+      let testTable;
+
+      before(() => testTable = new Table(name, definition));
+
+      it('should created an instance of Table', () => {
+        return expect(testTable).to.be.instanceOf(Table);
+      });
+
+      it('should have created the expected columns', () => {
+        let expectedColumns = [
+          {name: 'title', type: 'character', allowNull: false, json: 'title', validator: utils.typeValidators['character'], size: 45},
+        ]
+
+        return expect(testTable.columns).to.deep.equal(expectedColumns);
+      });
+    });
+
+
     describe('when definition is an object', () => {
       describe('where a definition property is a number', () => {
         let definition = {title: 'character varying', id: 14};

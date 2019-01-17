@@ -16,8 +16,8 @@ const modelDefinition = {
   created_on: {type: 'date', allowNull: true},
   cost: 'double precision',
   amount: 'integer',
-  summary: 'character',
-  description: 'character varying',
+  summary: 'character(10)',
+  description: 'character varying (500)',
 };
 
 

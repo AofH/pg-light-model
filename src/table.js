@@ -1,7 +1,44 @@
 const utils = require('./utils');
 const _ = require('lodash');
 
-function _createColumns(definitions) {
+
+const checkForSize = (options) => {
+  let sizeRegex = /\(\d*\)/;
+  if (sizeRegex.test(options.type)) {
+    const sizeSection = sizeRegex.exec(options.type)[0];
+    options.size = Number.parseInt(sizeSection.slice(1, sizeSection.length - 1), 10);
+    options.type = options.type.split(sizeRegex)[0].trim();
+  }
+
+  return options;
+};
+
+const createColumnFromString = (name, type) => {
+  let options = {
+    name: utils.toSnakeCase(name),
+    type,
+  };
+
+  options = checkForSize(options);
+  return options;
+}
+
+const createColumnFromObject = (name, columnDef) => {
+  if (!columnDef.type) {
+    throw new Error('A type property is required when using an object to define a database column');
+  }
+
+  let options = {
+    type: columnDef.type,
+    name: columnDef.column ? columnDef.column : utils.toSnakeCase(name),
+    allowNull: columnDef.allowNull ? true : false,
+  };
+
+  options = checkForSize(options);
+  return options;
+}
+
+const createColumns = (definitions) => {
   const jsonKeys = Object.keys(definitions);
 
   let columns = jsonKeys.map((key) => {
@@ -13,20 +50,11 @@ function _createColumns(definitions) {
     let columnOptions = {json: key, allowNull: false};
 
     if (type === 'string') {
-      columnOptions.name = utils.toSnakeCase(key);
-      columnOptions.type = definitions[key]
+      columnOptions = {...columnOptions, ...createColumnFromString(key, definitions[key])};
     }
 
     if (type === 'object') {
-      let columnDefinition = definitions[key];
-
-      if (!columnDefinition.type) {
-        throw new Error('A type property is required when using an object to define a database column');
-      }
-
-      columnOptions.type = columnDefinition.type;
-      columnOptions.name = columnDefinition.column ? columnDefinition.column : utils.toSnakeCase(key);
-      columnOptions.allowNull = columnDefinition.allowNull ? true : false;
+      columnOptions = {...columnOptions, ...createColumnFromObject(key, definitions[key])};
     }
 
     if (!utils.typeValidators[columnOptions.type]) {
@@ -40,7 +68,7 @@ function _createColumns(definitions) {
   return columns;
 }
 
-function _createIncrementedPlaceHolders(offset=0, mapSize) {
+const createIncrementedPlaceHolders = (offset=0, mapSize) => {
   offset = (offset * mapSize) + 1;
   return [...Array(mapSize)].map((e, index) => `$${offset + index}`).join(', ');
 };
@@ -51,7 +79,7 @@ function Table (name, definition) {
     throw new Error('Definition must be an object when creating a table');
   }
 
-  this.columns = _createColumns(definition)
+  this.columns = createColumns(definition)
   this.name = name
   this._db = null
 };
@@ -81,7 +109,7 @@ Table.prototype.insert = function(records) {
 
   let placeholders = ``;
   const flatRecords = records.map((record, offset) => {
-    const incrementedPlaceHolders = _createIncrementedPlaceHolders(offset, this.columns.length);
+    const incrementedPlaceHolders = createIncrementedPlaceHolders(offset, this.columns.length);
     placeholders = (offset === 0) ? `(${incrementedPlaceHolders})` : `${placeholders}, (${incrementedPlaceHolders})`;
 
     return this.columns.map((column) => {
