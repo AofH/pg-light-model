@@ -44,14 +44,14 @@ TestFixture.prototype.generateAndSaveMany = function(amount, override) {
 };
 
 TestFixture.prototype.removeOne = function(column, value) {
-  let sql = `DELETE FROM ${this.model.name} WHERE $1 = $2`;
-  return this.model.query(sql, [column, value]);
+  let sql = `DELETE FROM ${this.model.name} WHERE ${column} = $1`;
+  return this.model.query(sql, [value]);
 };
 
 TestFixture.prototype.removeMany = function(column, values) {
-  let sql = `DELETE FROM ${this.model.name} WHERE $1 in ($2)`;
-  values = values.join(', ');
-  return this.model.query(sql, [column, values]);
+  let placeholders = values.map((v, i) => `$${i+1}`).join(', ');
+  let sql = `DELETE FROM ${this.model.name} WHERE ${column} in (${placeholders})`;
+  return this.model.query(sql, values);
 };
 
 TestFixture.prototype.removeAll = function() {

@@ -37,8 +37,7 @@ describe('Database Integration', () => {
   });
 
   after(() => {
-    //kill the database connection
-    // DO I Have this ability? is it needed?
+    return activeDatabase.end();
   });
 
   describe('when creating models', () => {

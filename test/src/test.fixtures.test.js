@@ -37,7 +37,7 @@ describe('Test Fixture', () => {
         });
 
         it('should have a .id property that is a bigint', () => {
-          return expect(Number.isInteger(result.id)).to.be.true;
+          return expect(Number.isInteger(Number.parseInt(result.id, 10))).to.be.true;
         });
 
         it('should have a .isActive property which is a boolean', () => {
@@ -79,7 +79,7 @@ describe('Test Fixture', () => {
         });
 
         it('should have a .id property that is a bigint', () => {
-          return expect(Number.isInteger(result.id)).to.be.true;
+          return expect(Number.isInteger(Number.parseInt(result.id, 10))).to.be.true;
         });
 
         it('should have a .isActive property which is a boolean', () => {
@@ -298,8 +298,8 @@ describe('Test Fixture', () => {
     });
 
     it('should have called model.query with the expected arguments', () => {
-      let sql = `DELETE FROM test.table WHERE $1 = $2`;
-      let params = ['id', 3];
+      let sql = `DELETE FROM test.table WHERE id = $1`;
+      let params = [3];
       return expect(model.query).to.be.calledWith(sql, params);
     });
   });
@@ -327,8 +327,8 @@ describe('Test Fixture', () => {
     });
 
     it('should have called model.query with the expected arguments', () => {
-      let sql = `DELETE FROM test.table WHERE $1 in ($2)`;
-      let params = ['id', '3, 4, 5, 6'];
+      let sql = `DELETE FROM test.table WHERE id in ($1, $2, $3, $4)`;
+      let params = [ 3, 4, 5, 6];
       return expect(model.query).to.be.calledWith(sql, params);
     });
   });

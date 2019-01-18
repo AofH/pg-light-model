@@ -25,6 +25,10 @@ function PostgresDatabase(pool) {
   this.db = pool;
 };
 
+PostgresDatabase.prototype.end = function() {
+  return this.db.end();
+}
+
 PostgresDatabase.prototype.query = function(sql, params) {
   return this.db.query(sql, params);
 };

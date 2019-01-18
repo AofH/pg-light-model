@@ -4,9 +4,10 @@ describe('Test Randomizer', () => {
   describe('.bigint', () => {
     let result;
 
-    before(() => result = randomizer.bigint())
+    before(() => result = Number.parseInt(randomizer.bigint(), 10));
 
     it('should return a result that is greater than or equal to 10 000', () => {
+      result = Number.parseInt(result, 10);
       return expect(result).to.be.above(9999);
     });
 

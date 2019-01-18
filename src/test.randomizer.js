@@ -22,7 +22,7 @@ const generateRandomCharacters = (size) => {
 };
 
 module.exports.bigint = () => {
-  return generateRandomInteger(10000, 1000000);
+  return generateRandomInteger(10000, 1000000) + '';
 };
 
 module.exports.boolean = () => {
@@ -32,11 +32,16 @@ module.exports.boolean = () => {
 
 module.exports.date = () => {
   // TODO: ooof
-  return '2011-12-04';
+  let date = new Date();
+  date.setHours(0);
+  date.setMinutes(0);
+  date.setSeconds(0);
+  date.setMilliseconds(0);
+  return date;
 };
 
 module.exports.doublePrecision = () => {
-  return generateRandomDouble(0, 5000);
+  return Number.parseFloat(generateRandomDouble(0, 5000).toPrecision(8), 10);
 }
 
 module.exports.integer = () => {
